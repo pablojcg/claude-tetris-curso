@@ -1,3 +1,47 @@
+:root {
+  --bg: #0f0f17;
+  --text: #e0e0e0;
+  --title-color: #7aa2f7;
+  --board-border: #2a2a3a;
+  --board-bg: #1a1a25;
+  --grid-line: #22222e;
+  --label-color: #555570;
+  --value-color: #7aa2f7;
+  --control-text: #888;
+  --kbd-bg: #22223a;
+  --kbd-border: #3a3a5a;
+  --kbd-text: #aaa;
+  --overlay-bg: rgba(10, 10, 20, 0.75);
+  --overlay-title-color: #e57373;
+  --restart-bg: #7aa2f7;
+  --restart-text: #0f0f17;
+  --restart-hover: #9bbdff;
+  --switch-bg: #2a2a3a;
+  --switch-thumb: #7aa2f7;
+}
+
+body.light {
+  --bg: #f0f0f5;
+  --text: #24242e;
+  --title-color: #3b5bdb;
+  --board-border: #c8c8d8;
+  --board-bg: #ffffff;
+  --grid-line: #d8d8e4;
+  --label-color: #6b6b80;
+  --value-color: #3b5bdb;
+  --control-text: #555;
+  --kbd-bg: #e4e4ee;
+  --kbd-border: #c8c8d8;
+  --kbd-text: #444;
+  --overlay-bg: rgba(230, 230, 240, 0.85);
+  --overlay-title-color: #d9534f;
+  --restart-bg: #3b5bdb;
+  --restart-text: #ffffff;
+  --restart-hover: #5c7cfa;
+  --switch-bg: #c8c8d8;
+  --switch-thumb: #3b5bdb;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -5,18 +49,27 @@
 }
 
 body {
-  background: #0f0f17;
-  color: #e0e0e0;
+  background: var(--bg);
+  color: var(--text);
   font-family: system-ui, -apple-system, sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   user-select: none;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .wrapper {
   position: relative;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .game-title {
@@ -24,8 +77,34 @@ body {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: 8px;
-  color: #7aa2f7;
-  margin-bottom: 16px;
+  color: var(--title-color);
+  margin-bottom: 0;
+}
+
+.theme-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border: none;
+  border-radius: 12px;
+  background: var(--switch-bg);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.theme-switch-thumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--switch-thumb);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.theme-switch[aria-pressed="true"] .theme-switch-thumb {
+  transform: translateX(20px);
 }
 
 .game-container {
@@ -36,8 +115,8 @@ body {
 
 #board {
   display: block;
-  border: 1px solid #2a2a3a;
-  background: #1a1a25;
+  border: 1px solid var(--board-border);
+  background: var(--board-bg);
   border-radius: 4px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
 }
@@ -60,7 +139,7 @@ body {
 .label {
   font-size: 10px;
   letter-spacing: 2px;
-  color: #555570;
+  color: var(--label-color);
   font-weight: 600;
 }
 
@@ -68,14 +147,14 @@ body {
   font-family: 'Courier New', Courier, monospace;
   font-size: 26px;
   font-weight: 700;
-  color: #7aa2f7;
+  color: var(--value-color);
   letter-spacing: 1px;
 }
 
 #next-canvas {
   display: block;
-  border: 1px solid #2a2a3a;
-  background: #1a1a25;
+  border: 1px solid var(--board-border);
+  background: var(--board-bg);
   border-radius: 4px;
 }
 
@@ -89,20 +168,20 @@ body {
 
 .controls li {
   font-size: 12px;
-  color: #888;
+  color: var(--control-text);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 kbd {
-  background: #22223a;
-  border: 1px solid #3a3a5a;
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
   border-radius: 3px;
   padding: 1px 6px;
   font-size: 11px;
   font-family: inherit;
-  color: #aaa;
+  color: var(--kbd-text);
 }
 
 /* ---- Overlay ---- */
@@ -112,7 +191,7 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 20, 0.75);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   border-radius: 4px;
 }
@@ -133,19 +212,19 @@ kbd {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: 4px;
-  color: #e57373;
+  color: var(--overlay-title-color);
 }
 
 #overlay-score {
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
-  color: #7aa2f7;
+  color: var(--value-color);
 }
 
 #restart-btn {
   margin-top: 8px;
-  background: #7aa2f7;
-  color: #0f0f17;
+  background: var(--restart-bg);
+  color: var(--restart-text);
   border: none;
   border-radius: 6px;
   padding: 10px 28px;
@@ -157,5 +236,5 @@ kbd {
 }
 
 #restart-btn:hover {
-  background: #9bbdff;
+  background: var(--restart-hover);
 }

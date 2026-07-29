@@ -1,0 +1,44 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    if: github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Issue Triage
+        id: claude-triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh issue comment:*),Bash(gh label list:*),Bash(gh label create:*)"'
+          prompt: |
+            Analiza el issue #${{ github.event.issue.number }} del repositorio ${{ github.repository }} (título: "${{ github.event.issue.title }}").
+
+            Pasos a seguir:
+            1. Lee el contenido completo del issue con `gh issue view ${{ github.event.issue.number }} --repo ${{ github.repository }}`.
+            2. Revisa el código del repositorio (game.js, index.html, style.css) según sea relevante para entender el contexto del problema o solicitud.
+            3. Revisa las labels existentes con `gh label list --repo ${{ github.repository }}`. Si no existen labels apropiadas (por ejemplo: bug, enhancement, question, documentation, duplicate, wontfix, good first issue, invalid, priority-alta, priority-media, priority-baja), créalas con `gh label create` usando colores y descripciones razonables, sin duplicar labels ya existentes.
+            4. Asigna al issue las labels más apropiadas usando `gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} --add-label "..."`. Elimina labels que ya no apliquen si el issue fue editado y cambió de naturaleza, usando `--remove-label`.
+            5. Publica un comentario en el issue (`gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body "..."`) con un diagnóstico general en formato Markdown compatible con GitHub, que incluya:
+               - **Resumen**: una descripción breve del problema o solicitud en tus propias palabras.
+               - **Tipo**: bug, mejora, pregunta, etc.
+               - **Área afectada**: qué archivo(s) o parte del juego se ven involucrados (tablero, piezas, colisiones, rotación, puntuación, render, controles, etc.).
+               - **Diagnóstico**: análisis técnico de la causa probable o del alcance de la solicitud, referenciando funciones/archivos relevantes de game.js cuando aplique.
+               - **Posible enfoque de solución**: pasos generales sugeridos para implementar la solución (sin escribir el código todavía, solo el enfoque).
+               - **Labels asignadas**: lista de las labels que le asignaste y por qué.
+
+            No modifiques el código del repositorio, este workflow es solo de diagnóstico y etiquetado. No hagas commits ni cambios en archivos.

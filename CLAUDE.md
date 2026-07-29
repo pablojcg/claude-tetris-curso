@@ -1,0 +1,40 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project overview
+
+A classic Tetris implementation in vanilla JavaScript, HTML5 Canvas, and CSS. No dependencies, no build step, no package.json — just three files (`index.html`, `style.css`, `game.js`).
+
+## Running the game
+
+There is no build/lint/test tooling. To run:
+
+```bash
+start index.html        # Windows: open directly in the browser
+# or serve locally (needed if testing anything that requires http:// origin)
+python3 -m http.server 8000
+npx serve .
+```
+
+Then open `http://localhost:8000`. Changes to `game.js`/`style.css`/`index.html` are picked up on browser refresh — no compilation step.
+
+There are no automated tests. Verify changes by playing the game in a browser (see the Controls table in README.md).
+
+## Architecture
+
+Everything lives in `game.js` (~300 lines), which owns the entire game state and loop. Key concepts to understand before making changes:
+
+- **Board model**: `board` is a `ROWS × COLS` matrix; each cell is `0` (empty) or a piece color index (1–7).
+- **Pieces**: `PIECES` defines each tetromino as a square matrix of color indices. Rotation (`rotateCW`) is a transpose + row-reverse, not a lookup table — there's no separate rotation-state per piece.
+- **Collision** (`collide`): the single source of truth for whether a shape can occupy a position; used by movement, rotation, ghost-piece projection, and locking.
+- **Wall kicks** (`tryRotate`): after rotating, tries offsets `[0, -1, 1, -2, 2]` and takes the first that doesn't collide.
+- **Game loop** (`loop`): driven by `requestAnimationFrame`, accumulates elapsed time in `dropAccum` and advances the piece one row once `dropAccum >= dropInterval`.
+- **Locking/line-clear** (`lockPiece` → `merge` + `clearLines` + `spawn`): `clearLines` scans bottom-up, splices out full rows, and unshifts empty rows at the top.
+- **Scoring/leveling**: `LINE_SCORES = [0, 100, 300, 500, 800]` multiplied by `level`; level increments every 10 lines; `dropInterval = max(100, 1000 - (level-1)*90)`.
+- **Ghost piece**: `ghostY()` projects the current piece straight down via repeated `collide` checks; drawn with `globalAlpha = 0.2`.
+- All module-level game state (`board`, `current`, `next`, `score`, `lines`, `level`, `paused`, `gameOver`, timing vars) is declared as loose top-level `let` bindings and mutated directly by functions — there are no classes or a state container.
+- `init()` (re)initializes all state and starts the loop; the restart button and initial page load both call it.
+- Input is a single `keydown` listener with a `switch` on `e.code`; `KeyP` toggles pause independent of `gameOver`/`paused` guards that gate the rest.
+
+If you change `COLS`, `ROWS`, or `BLOCK` in `game.js`, also update the `<canvas id="board">` `width`/`height` in `index.html` to match (`COLS × BLOCK` and `ROWS × BLOCK`).

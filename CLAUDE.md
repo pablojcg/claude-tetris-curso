@@ -25,8 +25,8 @@ There are no automated tests. Verify changes by playing the game in a browser (s
 
 Everything lives in `game.js` (~300 lines), which owns the entire game state and loop. Key concepts to understand before making changes:
 
-- **Board model**: `board` is a `ROWS × COLS` matrix; each cell is `0` (empty) or a piece color index (1–7).
-- **Pieces**: `PIECES` defines each tetromino as a square matrix of color indices. Rotation (`rotateCW`) is a transpose + row-reverse, not a lookup table — there's no separate rotation-state per piece.
+- **Board model**: `board` is a `ROWS × COLS` matrix; each cell is `0` (empty) or a piece color index (1–8).
+- **Pieces**: `PIECES` defines each tetromino as a square matrix of color indices. Rotation (`rotateCW`) is a transpose + row-reverse, not a lookup table — there's no separate rotation-state per piece. Type 8 is a non-standard 3×3 hollow square piece (`[[8,8,8],[8,0,8],[8,8,8]]`) spawned via `HOLLOW_CHANCE` (1/15) in `randomPiece()` instead of the uniform 1-in-7 roll. Its center `0` is intentional: once locked, that cell can never be filled by another piece, permanently blocking that row — this is the intended challenge, not a bug.
 - **Collision** (`collide`): the single source of truth for whether a shape can occupy a position; used by movement, rotation, ghost-piece projection, and locking.
 - **Wall kicks** (`tryRotate`): after rotating, tries offsets `[0, -1, 1, -2, 2]` and takes the first that doesn't collide.
 - **Game loop** (`loop`): driven by `requestAnimationFrame`, accumulates elapsed time in `dropAccum` and advances the piece one row once `dropAccum >= dropInterval`.

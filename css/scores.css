@@ -1,1 +1,160 @@
-/* css/scores.css: estilos de scores.js */
+/* css/scores.css: tabla de records (scores.js). Solo usa las variables del tema
+   (--text, --value-color, --label-color, --kbd-*, --restart-bg...) para valer en
+   tema claro y oscuro. Pensada para caber en ~280px dentro de las pantallas. */
+
+.records {
+  /* Ancho fijo: dentro de .screen-box (align-items: center) un 100% se encogería. */
+  width: 280px;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+/* ---- Tabla ---- */
+.records-list {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0 3px;
+}
+
+.records-caption {
+  caption-side: top;
+  padding-bottom: 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--label-color);
+}
+
+/* Cabecera solo para lectores de pantalla */
+.records-list thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.record-row > * {
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 400;
+  background: var(--kbd-bg);
+  border-top: 1px solid var(--kbd-border);
+  border-bottom: 1px solid var(--kbd-border);
+  vertical-align: middle;
+}
+
+.record-row > :first-child {
+  border-left: 1px solid var(--kbd-border);
+  border-radius: 4px 0 0 4px;
+}
+
+.record-row > :last-child {
+  border-right: 1px solid var(--kbd-border);
+  border-radius: 0 4px 4px 0;
+}
+
+.record-rank {
+  width: 32px;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  color: var(--label-color);
+}
+
+.record-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.record-score {
+  width: 96px;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--value-color);
+}
+
+/* Primer puesto: rango con el color de acento */
+.record-row:first-child .record-rank {
+  color: var(--value-color);
+}
+
+/* ---- Fila resaltada (puntuación recién conseguida) ---- */
+.record-row.is-new > * {
+  background: var(--kbd-bg);
+  background: color-mix(in srgb, var(--restart-bg) 22%, var(--kbd-bg));
+  border-color: var(--restart-bg);
+}
+
+.record-row.is-new .record-rank,
+.record-row.is-new .record-name {
+  color: var(--value-color);
+  font-weight: 700;
+}
+
+.record-row.is-new {
+  animation: record-pop 0.9s ease-out 2;
+}
+
+@keyframes record-pop {
+  0%, 100% { filter: none; }
+  50% { filter: brightness(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .record-row.is-new { animation: none; }
+}
+
+/* ---- Estado vacío ---- */
+.records-empty {
+  padding: 14px 8px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--control-text);
+  border: 1px dashed var(--kbd-border);
+  border-radius: 4px;
+}
+
+/* ---- Máximos (mejor combo / líneas máx.) ---- */
+.records-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.records-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+}
+
+.records-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--label-color);
+}
+
+.records-stat-value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--value-color);
+}

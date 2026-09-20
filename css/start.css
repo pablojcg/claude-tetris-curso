@@ -1,1 +1,82 @@
-/* css/start.css: estilos de start.js */
+/* css/start.css: estilos de start.js (prefijo st-) */
+
+/* Contenedor de récords: ocupa el ancho de la caja y mantiene la altura contenida */
+#start-records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 220px;
+}
+
+.st-records-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--label-color);
+}
+
+.st-table {
+  width: 100%;
+}
+
+#start-options {
+  width: 100%;
+}
+
+/* Jugar: botón principal algo más ancho */
+.st-play {
+  min-width: 160px;
+}
+
+/* ---- Resetear records ---- */
+.st-reset {
+  display: flex;
+  justify-content: center;
+  min-height: 28px;
+}
+
+.st-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.st-confirm-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Botón secundario (contorno) */
+.st-btn {
+  background: transparent;
+  color: var(--control-text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.st-btn:hover,
+.st-btn:focus-visible {
+  background: var(--kbd-bg);
+  color: var(--text);
+}
+
+.st-btn-danger {
+  color: var(--overlay-title-color);
+  border-color: var(--overlay-title-color);
+}
+
+.st-btn-danger:hover,
+.st-btn-danger:focus-visible {
+  background: var(--overlay-title-color);
+  color: var(--restart-text);
+}

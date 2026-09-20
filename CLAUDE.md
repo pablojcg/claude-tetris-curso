@@ -27,7 +27,7 @@ There are no automated tests. Verify changes by playing the game in a browser (s
 
 - **`core.js`** (shared contracts): `STORAGE_KEYS` + `loadString/saveString/loadJSON/saveJSON` (never throw), the **hook bus** (`onHook`/`fireHook`; events: `ready`, `newGame`, `gameOver`, `pause`, `resume`, `lineClear`, `skinChange`, `startLevelChange`), the **screens** (`showScreen/hideScreens/activeScreen`, `#screen-start|pause|gameover`; `isInputLocked()` is true while any screen is visible or after `setInputLocked(true)`), `getStartLevel/setStartLevel`, and `buildOptionsPanel(mount)` (level + skin selects shared by start and pause screens).
 - **`skins.js`**: the `Skin` object (`list/current/set/drawBlock/gridColor/beforeDraw/afterDraw`). `game.js` draws only through it. `set()` sets `body[data-skin]`, persists and fires `skinChange`.
-- **`scores.js`**: the `Scores` object (top 5 + best combo / max lines in localStorage). Player names are user input: render with `textContent`, never `innerHTML`.
+- **`scores.js`**: the `Scores` object (top 5 + best combo / max lines in localStorage). Player names are user input: render with `textContent`, never `innerHTML`. Everything read from localStorage is sanitized in `read()` (types, NaN, order, max 5 entries, names trimmed to 12 chars, empty → "Anónimo"), so public functions never throw on corrupt data; ties keep the older entry ahead. Table styles live in `css/scores.css`.
 - `menus.js` (pause menu), `gameover.js` (game-over screen), `start.js` (start screen). Space is hard drop, so never auto-focus a button on the game-over screen.
 - `.hidden` is a global utility class in `style.css`; overlays are `.screen` / `.screen-box`, buttons are `.btn`.
 

@@ -42,7 +42,8 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Vista previa** de la siguiente pieza.
 - **Sistema de puntuación** clásico de Tetris (100 / 300 / 500 / 800 multiplicado por nivel).
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
-- **Pausa** (`P` o `Esc`) y **Game Over** con opción de reinicio.
+- **Menú de pausa** (`P` o `Esc`): Reanudar, Reiniciar, Ver controles y selector de nivel inicial / skin; bloquea las teclas de juego mientras está abierto.
+- **Game Over** con opción de reinicio.
 - **Tema claro / oscuro** con interruptor, recordado en `localStorage`.
 - **Pantalla de inicio** antes de la primera partida.
 - **Combo**: cuenta las piezas seguidas que limpian líneas.

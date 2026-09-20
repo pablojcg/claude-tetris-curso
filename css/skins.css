@@ -1,1 +1,57 @@
-/* css/skins.css: estilos de skins.js */
+/* css/skins.css: estilos de skins.js
+   Cada skin se activa con body[data-skin="..."]. Solo toca variables y estilo del tablero
+   (#board, #next-canvas); retro no necesita reglas: usa las variables de style.css.
+   Las reglas de tema claro llevan la clase `light` para ganar en especificidad a `body.light`. */
+
+/* ---- Neon: tablero negro con marco luminoso, también en tema claro ---- */
+body[data-skin="neon"],
+body.light[data-skin="neon"] {
+  --board-bg: #000;
+  --board-border: #00e5ff;
+  --grid-line: rgba(0, 229, 255, 0.1);
+}
+
+body[data-skin="neon"] #board,
+body[data-skin="neon"] #next-canvas {
+  border-radius: 2px;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.45), inset 0 0 18px rgba(0, 229, 255, 0.1);
+}
+
+/* ---- Pastel: tablero suave y redondeado ---- */
+body[data-skin="pastel"] {
+  --board-bg: #2b2642;
+  --board-border: #5a5380;
+  --grid-line: rgba(255, 255, 255, 0.06);
+}
+
+body.light[data-skin="pastel"] {
+  --board-bg: #f6eef9;
+  --board-border: #e6cfe8;
+  --grid-line: #e9dbef;
+}
+
+body[data-skin="pastel"] #board,
+body[data-skin="pastel"] #next-canvas {
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(120, 90, 160, 0.3);
+}
+
+/* ---- Pixel art: bordes duros, sin redondeo ni difuminado ---- */
+body[data-skin="pixel"] {
+  --board-bg: #10101c;
+  --board-border: #4a4a68;
+  --grid-line: rgba(255, 255, 255, 0.07);
+}
+
+body.light[data-skin="pixel"] {
+  --board-bg: #dcdcc8;
+  --board-border: #55554a;
+  --grid-line: rgba(0, 0, 0, 0.1);
+}
+
+body[data-skin="pixel"] #board,
+body[data-skin="pixel"] #next-canvas {
+  border-radius: 0;
+  /* el marco grueso se hace con sombras para no mover el layout */
+  box-shadow: 0 0 0 3px var(--board-border), 6px 6px 0 3px rgba(0, 0, 0, 0.45);
+}

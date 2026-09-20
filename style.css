@@ -221,7 +221,12 @@ kbd {
   color: var(--value-color);
 }
 
-#restart-btn {
+.overlay-box.hidden {
+  display: none;
+}
+
+#restart-btn,
+.menu-btn {
   margin-top: 8px;
   background: var(--restart-bg);
   color: var(--restart-text);
@@ -235,6 +240,79 @@ kbd {
   transition: background 0.15s;
 }
 
-#restart-btn:hover {
+#restart-btn:hover,
+.menu-btn:hover {
   background: var(--restart-hover);
+}
+
+#restart-btn:focus-visible,
+.menu-btn:focus-visible,
+.level-select select:focus-visible {
+  outline: 2px solid var(--title-color);
+  outline-offset: 2px;
+}
+
+/* ---- Menú de pausa ---- */
+#pause-title,
+#controls-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--overlay-title-color);
+}
+
+.menu-btn {
+  min-width: 190px;
+  margin-top: 0;
+}
+
+.level-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 190px;
+  margin-top: 8px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--control-text);
+}
+
+.level-select select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.menu-hint {
+  font-size: 11px;
+  color: var(--label-color);
+}
+
+.controls-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.controls-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--control-text);
+}
+
+.controls-list li span {
+  display: flex;
+  gap: 4px;
+  min-width: 80px;
+  justify-content: flex-end;
 }

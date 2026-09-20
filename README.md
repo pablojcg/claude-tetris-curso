@@ -42,7 +42,10 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Vista previa** de la siguiente pieza.
 - **Sistema de puntuación** clásico de Tetris (100 / 300 / 500 / 800 multiplicado por nivel).
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
-- **Pausa** y **Game Over** con opción de reinicio.
+- **Pausa** (`P` o `Esc`) y **Game Over** con opción de reinicio.
+- **Tema claro / oscuro** con interruptor, recordado en `localStorage`.
+- **Pantalla de inicio** antes de la primera partida.
+- **Combo**: cuenta las piezas seguidas que limpian líneas.
 
 ---
 
@@ -85,7 +88,7 @@ Después abre `http://localhost:8000` en el navegador.
 | `↑` o `X` | Rotar la pieza en sentido horario |
 | `↓`       | Soft drop (bajar más rápido)      |
 | `Espacio` | Hard drop (caída instantánea)     |
-| `P`       | Pausar / reanudar                 |
+| `P` / `Esc` | Pausar / reanudar               |
 
 ---
 
@@ -156,10 +159,17 @@ Cuando una pieza recién generada ya colisiona al aparecer (`spawn`), se dispara
 ## Estructura del proyecto
 
 ```
-03-tetris/
-├── index.html      # Estructura del DOM y canvas
-├── style.css       # Estilos del juego (dark theme)
-├── game.js         # Toda la lógica del Tetris (~300 líneas)
+claude-tetris-curso/
+├── index.html      # Estructura del DOM, canvas y pantallas (inicio, pausa, game over)
+├── style.css       # Estilos base, tema claro/oscuro, pantallas y botones
+├── css/            # Estilos por feature: skins, scores, menus, gameover, start
+├── core.js         # Almacenamiento seguro, hooks, pantallas y panel de opciones
+├── skins.js        # Skins visuales (todo el dibujo de celdas pasa por aquí)
+├── scores.js       # Records locales (top 5)
+├── menus.js        # Menú de pausa
+├── gameover.js     # Pantalla de Game Over
+├── start.js        # Pantalla de inicio
+├── game.js         # Lógica del Tetris: estado, bucle, colisiones, input
 └── README.md
 ```
 

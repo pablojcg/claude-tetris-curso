@@ -4,6 +4,7 @@ const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
 
+// Paleta plana de la skin Retro (las demás skins definen la suya en skins.js).
 const COLORS = [
   null,
   '#4dd0e1', // I - cyan
@@ -39,19 +40,22 @@ const nextCtx = nextCanvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 const linesEl = document.getElementById('lines');
 const levelEl = document.getElementById('level');
-const overlay = document.getElementById('overlay');
-const overlayTitle = document.getElementById('overlay-title');
-const overlayScore = document.getElementById('overlay-score');
-const restartBtn = document.getElementById('restart-btn');
 const themeToggle = document.getElementById('theme-toggle');
 
-const THEME_STORAGE_KEY = 'tetris-theme';
-
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let started = false;   // false hasta que se pulsa "Jugar" por primera vez
+let levelOffset = 0;   // nivel inicial - 1; el nivel sube cada 10 líneas a partir de él
+let combo = 0;         // piezas seguidas que han limpiado líneas
+let maxCombo = 0;
+let maxLinesAtOnce = 0;
 let gridLineColor;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
+}
+
+function intervalFor(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
 }
 
 function randomPiece() {
@@ -116,9 +120,15 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = Math.floor(lines / 10) + 1 + levelOffset;
+    dropInterval = intervalFor(level);
+    combo++;
+    maxCombo = Math.max(maxCombo, combo);
+    maxLinesAtOnce = Math.max(maxLinesAtOnce, cleared);
     updateHUD();
+    fireHook('lineClear', { cleared, combo });
+  } else {
+    combo = 0;
   }
 }
 
@@ -166,16 +176,10 @@ function updateHUD() {
   levelEl.textContent = level;
 }
 
+// El aspecto de cada celda lo decide la skin activa (skins.js).
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
-  context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
-  context.globalAlpha = 1;
+  Skin.drawBlock(context, x, y, colorIndex, size, alpha);
 }
 
 function drawGrid() {
@@ -197,6 +201,7 @@ function drawGrid() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  Skin.beforeDraw(ctx);
   drawGrid();
 
   // board
@@ -215,38 +220,43 @@ function draw() {
   for (let r = 0; r < current.shape.length; r++)
     for (let c = 0; c < current.shape[r].length; c++)
       drawBlock(ctx, current.x + c, current.y + r, current.shape[r][c], BLOCK);
+
+  Skin.afterDraw(ctx);
 }
 
 function drawNext() {
   const NB = 30;
   nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+  Skin.beforeDraw(nextCtx);
   const shape = next.shape;
   const offX = Math.floor((4 - shape[0].length) / 2);
   const offY = Math.floor((4 - shape.length) / 2);
   for (let r = 0; r < shape.length; r++)
     for (let c = 0; c < shape[r].length; c++)
       drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
+  Skin.afterDraw(nextCtx);
 }
 
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
-  overlayTitle.textContent = 'GAME OVER';
-  overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
-  overlay.classList.remove('hidden');
+  showScreen('gameover');
+  fireHook('gameOver', { score, lines, level, maxCombo, maxLinesAtOnce });
 }
 
+// Pausa / reanuda. Con el menú de pausa abierto no hay input de juego (ver isInputLocked).
 function togglePause() {
-  if (gameOver) return;
+  if (!started || gameOver) return;
   paused = !paused;
-  if (!paused) {
+  if (paused) {
+    cancelAnimationFrame(animId);
+    showScreen('pause');
+    fireHook('pause');
+  } else {
+    hideScreens();
+    fireHook('resume');
     lastTime = performance.now();
     loop(lastTime);
-  } else {
-    cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
   }
 }
 
@@ -270,27 +280,38 @@ function loop(ts) {
   animId = requestAnimationFrame(loop);
 }
 
-function init() {
+// Empieza una partida nueva. Sin argumento usa el nivel inicial guardado.
+function init(startLevel) {
+  const initial = Number.isInteger(startLevel) ? startLevel : getStartLevel();
+  levelOffset = initial - 1;
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  level = initial;
+  combo = 0;
+  maxCombo = 0;
+  maxLinesAtOnce = 0;
+  started = true;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = intervalFor(level);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
-  overlay.classList.add('hidden');
+  hideScreens();
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
+  fireHook('newGame', { level });
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
-  if (paused || gameOver) return;
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    if (!e.repeat) togglePause();
+    return;
+  }
+  if (isInputLocked() || !started || paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
       if (!collide(current.shape, current.x - 1, current.y)) current.x--;
@@ -313,15 +334,25 @@ document.addEventListener('keydown', e => {
   updateHUD();
 });
 
+// La rejilla se cachea: hay que volver a pedirla al cambiar de tema o de skin, y
+// repintar si el bucle está detenido (pausa / game over).
+function refreshLook() {
+  gridLineColor = Skin.gridColor();
+  if (started) {
+    draw();
+    drawNext();
+  }
+}
+
 function applyTheme(theme) {
   document.body.classList.toggle('light', theme === 'light');
   themeToggle.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
-  gridLineColor = getComputedStyle(document.body).getPropertyValue('--grid-line').trim();
-  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  saveString(STORAGE_KEYS.theme, theme);
+  refreshLook();
 }
 
 function initTheme() {
-  const saved = localStorage.getItem(THEME_STORAGE_KEY);
+  const saved = loadString(STORAGE_KEYS.theme);
   applyTheme(saved === 'light' ? 'light' : 'dark');
 }
 
@@ -330,7 +361,8 @@ themeToggle.addEventListener('click', () => {
   applyTheme(isLight ? 'dark' : 'light');
 });
 
-restartBtn.addEventListener('click', init);
+onHook('skinChange', refreshLook);
 
 initTheme();
-init();
+fireHook('ready');
+showScreen('start');

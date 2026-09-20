@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tetris</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/skins.css" />
+  <link rel="stylesheet" href="css/scores.css" />
+  <link rel="stylesheet" href="css/menus.css" />
+  <link rel="stylesheet" href="css/gameover.css" />
+  <link rel="stylesheet" href="css/start.css" />
 </head>
 <body>
   <div class="wrapper">
@@ -49,21 +54,49 @@
             <li><kbd>↑</kbd> rotar</li>
             <li><kbd>↓</kbd> bajar</li>
             <li><kbd>Space</kbd> caída</li>
-            <li><kbd>P</kbd> pausa</li>
+            <li><kbd>P</kbd> / <kbd>Esc</kbd> pausa</li>
           </ul>
         </div>
       </aside>
     </div>
 
-    <div id="overlay" class="overlay hidden">
-      <div class="overlay-box">
-        <p id="overlay-title">GAME OVER</p>
-        <p id="overlay-score"></p>
-        <button id="restart-btn">Reiniciar</button>
+    <!-- Pantallas (solo una visible a la vez, ver core.js). Cada feature es dueña del
+         contenido de su(s) punto(s) de montaje y lo (re)construye desde su propio .js. -->
+    <div id="screen-start" class="screen hidden">
+      <div class="screen-box">
+        <p class="screen-title">TETRIS</p>
+        <div id="start-records"></div>
+        <div id="start-options"></div>
+        <button id="play-btn" class="btn" type="button">Jugar</button>
+      </div>
+    </div>
+
+    <div id="screen-pause" class="screen hidden">
+      <div class="screen-box">
+        <p class="screen-title">PAUSA</p>
+        <div id="pause-menu">
+          <button id="resume-btn" class="btn" type="button">Reanudar</button>
+          <button id="pause-restart-btn" class="btn" type="button">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-gameover" class="screen hidden">
+      <div class="screen-box">
+        <p class="screen-title">GAME OVER</p>
+        <p id="gameover-score"></p>
+        <div id="gameover-records"></div>
+        <button id="restart-btn" class="btn" type="button">Reiniciar</button>
       </div>
     </div>
   </div>
 
+  <script src="core.js"></script>
+  <script src="skins.js"></script>
+  <script src="scores.js"></script>
+  <script src="menus.js"></script>
+  <script src="gameover.js"></script>
+  <script src="start.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

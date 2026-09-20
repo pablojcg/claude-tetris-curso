@@ -1,1 +1,107 @@
-/* css/gameover.css: estilos de gameover.js */
+/* css/gameover.css: estilos de gameover.js (prefijo go-). La tabla top 5 la estiliza scores.css. */
+
+#gameover-score {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ---- Avisos de récord histórico ---- */
+.go-notices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 260px;
+}
+
+.go-notice {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--restart-text);
+  background: var(--restart-bg);
+  border-radius: 999px;
+  padding: 3px 12px;
+}
+
+/* ---- Resumen de la partida ---- */
+.go-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 260px;
+  padding: 8px 12px;
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+}
+
+.go-summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.go-summary-label {
+  font-size: 12px;
+  color: var(--control-text);
+}
+
+.go-summary-value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--value-color);
+}
+
+/* ---- Formulario de nombre ---- */
+.go-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 260px;
+  text-align: left;
+}
+
+.go-form-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--value-color);
+}
+
+.go-form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.go-name-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 16px; /* 16px evita el zoom automático de iOS al enfocar */
+  font-family: inherit;
+  user-select: text; /* el body usa user-select: none */
+}
+
+.go-name-input:focus-visible {
+  outline: 2px solid var(--value-color);
+  outline-offset: 1px;
+}
+
+.go-save-btn {
+  padding: 8px 14px;
+  flex-shrink: 0;
+}
+
+/* Recibe el foco (sin botones) tras guardar el nombre: sin anillo visible */
+#gameover-records:focus {
+  outline: none;
+}

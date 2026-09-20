@@ -44,11 +44,32 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeToggle = document.getElementById('theme-toggle');
+const overlayViews = {
+  gameover: document.getElementById('gameover-view'),
+  pause: document.getElementById('pause-view'),
+  controls: document.getElementById('controls-view'),
+};
+const resumeBtn = document.getElementById('resume-btn');
+const pauseRestartBtn = document.getElementById('pause-restart-btn');
+const controlsBtn = document.getElementById('controls-btn');
+const controlsBackBtn = document.getElementById('controls-back-btn');
+const startLevelSelect = document.getElementById('start-level');
 
 const THEME_STORAGE_KEY = 'tetris-theme';
+const START_LEVEL_STORAGE_KEY = 'tetris-start-level';
+const MIN_START_LEVEL = 1;
+const MAX_START_LEVEL = 10;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let gridLineColor;
+let overlayView;
+// startLevel is the selector value (applies to the next game); baseLevel is the one the running game started with.
+let startLevel = MIN_START_LEVEL;
+let baseLevel = MIN_START_LEVEL;
+
+function intervalForLevel(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
+}
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -116,8 +137,8 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = baseLevel + Math.floor(lines / 10);
+    dropInterval = intervalForLevel(level);
     updateHUD();
   }
 }
@@ -228,26 +249,41 @@ function drawNext() {
       drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
 }
 
+function showOverlayView(name) {
+  overlayView = name;
+  for (const [key, el] of Object.entries(overlayViews)) el.classList.toggle('hidden', key !== name);
+  overlay.classList.remove('hidden');
+}
+
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
-  overlay.classList.remove('hidden');
+  showOverlayView('gameover');
+}
+
+function pauseGame() {
+  paused = true;
+  cancelAnimationFrame(animId);
+  showOverlayView('pause');
+  resumeBtn.focus();
+}
+
+function resumeGame() {
+  paused = false;
+  overlay.classList.add('hidden');
+  // Drop focus so a held Space/Enter can't re-activate a menu button or leak into the game.
+  document.activeElement?.blur();
+  lastTime = performance.now();
+  dropAccum = 0;
+  animId = requestAnimationFrame(loop);
 }
 
 function togglePause() {
   if (gameOver) return;
-  paused = !paused;
-  if (!paused) {
-    lastTime = performance.now();
-    loop(lastTime);
-  } else {
-    cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
-  }
+  if (paused) resumeGame();
+  else pauseGame();
 }
 
 function loop(ts) {
@@ -274,22 +310,38 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  baseLevel = startLevel;
+  level = baseLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = intervalForLevel(level);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  document.activeElement?.blur();
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP') {
+    if (!e.repeat) togglePause();
+    return;
+  }
+  if (e.code === 'Escape') {
+    if (e.repeat) return;
+    if (paused && overlayView === 'controls') {
+      showOverlayView('pause');
+      controlsBtn.focus();
+    } else {
+      togglePause();
+    }
+    return;
+  }
+  // Menu open (or game over): game keys are ignored so nothing moves on return.
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
@@ -330,7 +382,32 @@ themeToggle.addEventListener('click', () => {
   applyTheme(isLight ? 'dark' : 'light');
 });
 
+function initStartLevel() {
+  for (let l = MIN_START_LEVEL; l <= MAX_START_LEVEL; l++) {
+    startLevelSelect.add(new Option(String(l), String(l)));
+  }
+  const saved = Number.parseInt(localStorage.getItem(START_LEVEL_STORAGE_KEY), 10);
+  if (saved >= MIN_START_LEVEL && saved <= MAX_START_LEVEL) startLevel = saved;
+  startLevelSelect.value = String(startLevel);
+}
+
+startLevelSelect.addEventListener('change', () => {
+  startLevel = Number(startLevelSelect.value);
+  localStorage.setItem(START_LEVEL_STORAGE_KEY, String(startLevel));
+});
+
 restartBtn.addEventListener('click', init);
+pauseRestartBtn.addEventListener('click', init);
+resumeBtn.addEventListener('click', resumeGame);
+controlsBtn.addEventListener('click', () => {
+  showOverlayView('controls');
+  controlsBackBtn.focus();
+});
+controlsBackBtn.addEventListener('click', () => {
+  showOverlayView('pause');
+  controlsBtn.focus();
+});
 
 initTheme();
+initStartLevel();
 init();

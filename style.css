@@ -42,6 +42,37 @@ body.light {
   --switch-thumb: #3b5bdb;
 }
 
+/* Neon fuerza paleta oscura (game.js quita .light mientras esta skin está activa) */
+body[data-skin="neon"] {
+  --bg: #05050a;
+  --text: #d0f8ff;
+  --title-color: #00f0ff;
+  --board-border: #00f0ff;
+  --board-bg: #000000;
+  --grid-line: #0b1f24;
+  --label-color: #3a8a94;
+  --value-color: #ff2d95;
+  --control-text: #6fb8c2;
+  --kbd-bg: #06141a;
+  --kbd-border: #0f6b78;
+  --kbd-text: #00f0ff;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+  --overlay-title-color: #ff2d95;
+  --restart-bg: #00f0ff;
+  --restart-text: #000000;
+  --restart-hover: #66f7ff;
+  --switch-bg: #0b1f24;
+  --switch-thumb: #00f0ff;
+}
+
+body[data-skin="neon"] #board {
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.35);
+}
+
+body[data-skin="neon"] .game-title {
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -105,6 +136,23 @@ body {
 
 .theme-switch[aria-pressed="true"] .theme-switch-thumb {
   transform: translateX(20px);
+}
+
+.theme-switch:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.skin-select {
+  background: var(--switch-bg);
+  color: var(--text);
+  border: 1px solid var(--board-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .game-container {

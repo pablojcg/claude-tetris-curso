@@ -43,6 +43,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Sistema de puntuación** clásico de Tetris (100 / 300 / 500 / 800 multiplicado por nivel).
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
 - **Pausa** y **Game Over** con opción de reinicio.
+- **Skins** seleccionables sin recargar (Retro, Neon, Pastel, Pixel art) y **modo claro/oscuro**. Ambas preferencias se guardan en `localStorage`. Neon siempre usa fondo oscuro, así que mientras está activa el interruptor de tema queda deshabilitado.
 
 ---
 

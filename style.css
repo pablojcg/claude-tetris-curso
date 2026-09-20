@@ -18,6 +18,8 @@
   --restart-hover: #9bbdff;
   --switch-bg: #2a2a3a;
   --switch-thumb: #7aa2f7;
+  --highlight-bg: rgba(122, 162, 247, 0.2);
+  --input-bg: #1a1a25;
 }
 
 body.light {
@@ -40,6 +42,8 @@ body.light {
   --restart-hover: #5c7cfa;
   --switch-bg: #c8c8d8;
   --switch-thumb: #3b5bdb;
+  --highlight-bg: rgba(59, 91, 219, 0.16);
+  --input-bg: #ffffff;
 }
 
 /* Neon fuerza paleta oscura (game.js quita .light mientras esta skin está activa) */
@@ -273,9 +277,23 @@ kbd {
   display: none;
 }
 
+#overlay-title.start {
+  color: var(--title-color);
+}
+
+#overlay-message {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--value-color);
+}
+
+#overlay-message:empty {
+  display: none;
+}
+
 #restart-btn,
-.menu-btn {
-  margin-top: 8px;
+.menu-btn,
+#save-btn {
   background: var(--restart-bg);
   color: var(--restart-text);
   border: none;
@@ -288,8 +306,13 @@ kbd {
   transition: background 0.15s;
 }
 
+#restart-btn {
+  margin-top: 8px;
+}
+
 #restart-btn:hover,
-.menu-btn:hover {
+.menu-btn:hover,
+#save-btn:hover {
   background: var(--restart-hover);
 }
 
@@ -311,7 +334,6 @@ kbd {
 
 .menu-btn {
   min-width: 190px;
-  margin-top: 0;
 }
 
 .level-select {
@@ -363,4 +385,101 @@ kbd {
   gap: 4px;
   min-width: 80px;
   justify-content: flex-end;
+}
+
+/* ---- Records ---- */
+.name-form {
+  display: flex;
+  gap: 8px;
+}
+
+.name-form.hidden,
+.records.hidden {
+  display: none;
+}
+
+#name-input {
+  width: 140px;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--board-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  user-select: text;
+}
+
+#save-btn {
+  padding: 8px 16px;
+}
+
+.records {
+  width: 230px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  text-align: left;
+}
+
+.records .label {
+  text-align: center;
+}
+
+.records-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.records-list li,
+.records-stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  color: var(--control-text);
+}
+
+.records-list .rank {
+  width: 22px;
+  color: var(--label-color);
+}
+
+.records-list .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.records-stats {
+  border-top: 1px solid var(--board-border);
+  padding-top: 6px;
+}
+
+.records-list li.highlight,
+.records-stat.highlight {
+  background: var(--highlight-bg);
+  color: var(--value-color);
+  font-weight: 700;
+}
+
+#reset-records-btn {
+  align-self: center;
+  background: none;
+  border: none;
+  color: var(--label-color);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#reset-records-btn:hover {
+  color: var(--overlay-title-color);
 }

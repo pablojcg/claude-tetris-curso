@@ -45,6 +45,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Menú de pausa** (`P` o `Esc`) con Reanudar, Reiniciar, Ver controles y selector de **nivel inicial** (1–10, se guarda en `localStorage` y aplica a la próxima partida). Los controles del juego quedan bloqueados mientras el menú está abierto.
 - **Game Over** con opción de reinicio.
 - **Skins** seleccionables sin recargar (Retro, Neon, Pastel, Pixel art) y **modo claro/oscuro**. Ambas preferencias se guardan en `localStorage`. Neon siempre usa fondo oscuro, así que mientras está activa el interruptor de tema queda deshabilitado.
+- **Tabla de records local** (`localStorage`): top 5 con nombre del jugador, mejor combo y líneas máximas. Se muestra en la pantalla de inicio y en el Game Over, resalta tu posición y se puede resetear.
 
 ---
 
